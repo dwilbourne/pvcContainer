@@ -1,0 +1,34 @@
+{
+	"name": "pvc/di",
+	"description": "dependency injection container used by pvc",
+	"type": "project",
+	"authors": [
+		{
+			"name": "Doug Wilbourne",
+			"email": "dougwilbourne@gmail.com"
+		}
+	],
+	"license": "MIT",
+	"config": {
+		"php": "8.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"pvc\\di\\": "src/",
+			"pvcTests\\di\\": "tests/"
+		}
+	},
+	"require": {
+        "pvc/interfaces": "*",
+        "psr/log": "*",
+        "psr/http-client": "^1",
+        "psr/http-message": "^1",
+        "league/container": "^5",
+        "monolog/monolog": "^3",
+        "guzzlehttp/guzzle": "*"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9",
+		"phpstan/phpstan": "*"
+	}
+}
