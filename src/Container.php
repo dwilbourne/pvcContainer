@@ -2,39 +2,28 @@
 
 declare (strict_types=1);
 
-use League\Container\Definition\Definition as LeagueDefinition;
-use League\Container\Definition\DefinitionAggregate;
-use League\Container\ReflectionContainer;
+namespace pvc\container;
+
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use League\Container\Container as LeagueContainer;
 use Psr\Container\NotFoundExceptionInterface;
+use pvc\interfaces\container\ContainerBuilderInterface;
 
 /**
  * Class Container
+ * @phpstan-import-type DefArray from ContainerBuilderInterface
  */
 class Container implements ContainerInterface
 {
 	protected ContainerInterface $container;
 
-	protected string $definitionsFile = __DIR__.'/impl/league/psr/definitions.php';
+	protected string $definitionsFile = __DIR__.'/defs/definitions.php';
 
-	public function __construct(?string $definitionFile = null)
+	public function __construct(ContainerBuilderInterface $containerBuilder)
 	{
-		/** @var array<Definition> $defs */
-		$defs = include($definitionFile ?? $this->definitionsFile);
-		$aggregate = new DefinitionAggregate($defs);
-		$this->container = new LeagueContainer($aggregate);
-
-		/**
-		 * enable autowiring
-		 */
-		$this->container->delegate(new ReflectionContainer());
-	}
-
-	public function add(Definition $definition): void
-	{
-
+		/** @var array<DefArray> $defs */
+		$defs = include($this->definitionsFile);
+        $this->container = $containerBuilder->build($defs);
 	}
 
 	/**
