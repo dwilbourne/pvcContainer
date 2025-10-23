@@ -6,7 +6,6 @@ namespace pvc\container\container_builder;
 
 use DI\ContainerBuilder;
 use DI\Definition\Helper\DefinitionHelper;
-use Exception;
 use Psr\Container\ContainerInterface;
 use pvc\container\defs\DefCollectionBuilder;
 use pvc\container\defs\DefinitionCollection;

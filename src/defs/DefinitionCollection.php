@@ -6,6 +6,7 @@ namespace pvc\container\defs;
 
 use ArrayIterator;
 use pvc\interfaces\container\DefinitionInterface;
+use pvc\interfaces\validator\ValTesterInterface;
 use pvc\struct\collection\Collection;
 
 /**
@@ -15,13 +16,13 @@ use pvc\struct\collection\Collection;
 class DefinitionCollection extends Collection
 {
 	/**
-	 * @param  DefinitionCollectionKeyTester  $keyTester
-	 * @param  DefinitionCollectionValueTester  $valueTester
+	 * @param  ValTesterInterface  $keyTester
+	 * @param  ValTesterInterface  $valueTester
 	 * @param  DefinitionsArray  $definitions
 	 */
 	public function __construct(
-		DefinitionCollectionKeyTester $keyTester,
-		DefinitionCollectionValueTester $valueTester,
+		ValTesterInterface $keyTester,
+		ValTesterInterface $valueTester,
 		array $definitions = []
 	)
 	{
