@@ -6,10 +6,13 @@ use pvc\container\defs\DefCollectionBuilder;
 use PHPUnit\Framework\TestCase;
 use pvc\container\defs\Definition;
 use pvc\container\defs\DefinitionCollection;
+use pvc\container\defs\DefinitionCollectionKeyTester;
+use pvc\container\defs\DefinitionCollectionValueTester;
 use pvc\container\defs\DefinitionFactory;
+use pvc\interfaces\container\DefinitionInterface;
 
 /**
- * @phpstan-import-type DefArray from DefCollectionBuilder
+ * @phpstan-import-type DefinitionArray from DefinitionInterface
  */
 class DefCollectionBuilderTest extends TestCase
 {
@@ -19,12 +22,14 @@ class DefCollectionBuilderTest extends TestCase
 
 	protected DefinitionCollection $definitionCollection;
 
-	protected string $testFixture = __DIR__ . '/fixture/definitions.php';
+	protected string $testFixture = __DIR__.'/../fixture/definitions.php';
 
 	public function setUp(): void
 	{
 		$this->definitionFactory = new DefinitionFactory();
-		$this->definitionCollection = new DefinitionCollection();
+		$keyTester = new DefinitionCollectionKeyTester();
+		$valueTester = new DefinitionCollectionValueTester();
+		$this->definitionCollection = new DefinitionCollection($keyTester, $valueTester);
 		$this->defCollectionBuilder = new DefCollectionBuilder($this->definitionFactory, $this->definitionCollection);
 	}
 
@@ -45,7 +50,7 @@ class DefCollectionBuilderTest extends TestCase
 	 */
 	public function testBuild(): void
 	{
-		/** @var array<DefArray> $defs */
+		/** @var array<DefinitionArray> $defs */
 		$defs = include $this->testFixture;
 		$this->defCollectionBuilder->build($defs);
 		foreach ($this->definitionCollection as $def) {

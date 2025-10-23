@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace pvc\container\defs;
 
-
-use pvc\interfaces\container\ContainerBuilderInterface;
+use pvc\interfaces\container\DefinitionInterface;
 
 /**
- * @phpstan-import-type DefArray from ContainerBuilderInterface
+ * @phpstan-import-type DefinitionArray from DefinitionInterface
+ * @phpstan-import-type DefinitionsArray from DefinitionInterface
  */
 class DefCollectionBuilder
 {
+	/**
+	 * @param  DefinitionFactory  $definitionFactory
+	 * @param  DefinitionCollection  $definitionCollection
+	 */
 	public function __construct(
 		protected DefinitionFactory $definitionFactory,
 		protected DefinitionCollection $definitionCollection
@@ -21,15 +25,16 @@ class DefCollectionBuilder
 
 	/**
 	 * build
-	 * @param  array<DefArray>  $defs
+	 *
+	 * @param  DefinitionsArray  $definitionsArray
 	 *
 	 * @return DefinitionCollection
 	 */
-	public function build(array $defs): DefinitionCollection
+	public function build(array $definitionsArray): DefinitionCollection
 	{
-		foreach($defs as $def) {
-			$definition = $this->definitionFactory->makeDefinition($def);
-			$this->definitionCollection->offsetSet($definition->alias, $definition);
+		foreach ($definitionsArray as $defArray) {
+			$definition = $this->definitionFactory->makeDefinition($defArray);
+			$this->definitionCollection->add($definition->getAlias(), $definition);
 		}
 		return $this->definitionCollection;
 	}

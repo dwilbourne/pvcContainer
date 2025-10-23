@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace pvc\container\defs;
 
-use pvc\interfaces\container\ContainerBuilderInterface;
+use pvc\interfaces\container\DefinitionInterface;
 
 /**
- * @phpstan-import-type DefArray from ContainerBuilderInterface
+ * @phpstan-import-type DefinitionArray from DefinitionInterface
  */
 class DefinitionFactory
 {
 	/**
 	 * makeDefinition
-	 * @param  DefArray  $defArray
+	 * @param  DefinitionArray  $defArray
 	 *
-	 * @return Definition
+	 * @return DefinitionInterface
 	 */
-	public function makeDefinition(array $defArray): Definition
+	public function makeDefinition(array $defArray): DefinitionInterface
 	{
-		return new Definition($defArray['alias'], $defArray['class-string'], $defArray['args'] ?? []);
+		return new Definition($defArray);
 	}
 }

@@ -11,9 +11,11 @@ use League\Container\ReflectionContainer;
 use Psr\Container\ContainerInterface;
 use pvc\container\defs\DefCollectionBuilder;
 use pvc\interfaces\container\ContainerBuilderInterface;
+use pvc\interfaces\container\DefinitionInterface;
 
 /**
- * @phpstan-import-type DefArray from ContainerBuilderInterface
+ * @phpstan-import-type DefinitionArray from DefinitionInterface
+ * @phpstan-import-type DefinitionsArray from DefinitionInterface
  */
 class LeagueContainerBuilder implements ContainerBuilderInterface
 {
@@ -25,25 +27,15 @@ class LeagueContainerBuilder implements ContainerBuilderInterface
 
 	/**
 	 * build
-	 * @param  array<DefArray>  $pvcDefinitions
+	 *
+	 * @param  DefinitionsArray  $definitions
 	 *
 	 * @return ContainerInterface
 	 */
-	public function build(array $pvcDefinitions): ContainerInterface
+	public function build(array $definitions): ContainerInterface
 	{
-		$pvcDefinitionCollection = $this->definitionCollectionBuilder->build($pvcDefinitions);
-
-		$leagueDefinitionsArray = [];
-		foreach($pvcDefinitionCollection as $pvcDefinition) {
-			$leagueDefinition = new LeagueDefinition(
-				$pvcDefinition->alias,
-				$pvcDefinition->classString
-			);
-			foreach ($pvcDefinition->args as $arg) {
-				$leagueDefinition->addArgument($arg);
-			}
-			$leagueDefinitionsArray[] = $leagueDefinition;
-		}
+		$pvcDefinitionCollection = $this->definitionCollectionBuilder->build($definitions);
+		$leagueDefinitionsArray = array_map([$this, 'buildSingle'], $pvcDefinitionCollection->getElements());
 		$aggregate = new DefinitionAggregate($leagueDefinitionsArray);
 		$container = new Container($aggregate);
 
@@ -53,5 +45,21 @@ class LeagueContainerBuilder implements ContainerBuilderInterface
 		$container->delegate(new ReflectionContainer());
 
 		return $container;
+	}
+
+	protected function buildSingle(DefinitionInterface $definition): LeagueDefinition
+	{
+		$leagueDefinition = new LeagueDefinition(
+			$definition->getAlias(),
+			$definition->getResolvableString(),
+		);
+
+		$leagueDefinition->addArguments($definition->getConstructorArgs());
+
+		foreach($definition->getMethodCalls() as $methodCall) {
+			$leagueDefinition->addMethodCall($methodCall->getMethodName(), $methodCall->getArguments());
+		}
+
+		return $leagueDefinition;
 	}
 }
