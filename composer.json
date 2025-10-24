@@ -1,5 +1,5 @@
 {
-	"name": "pvc/di",
+	"name": "pvc/container",
 	"description": "dependency injection container used by pvc",
 	"type": "project",
 	"authors": [
