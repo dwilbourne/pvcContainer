@@ -12,8 +12,6 @@ use pvc\interfaces\container\DefinitionInterface;
 
 /**
  * Class Container
- * @phpstan-import-type DefinitionArray from DefinitionInterface
- * @phpstan-import-type DefinitionsArray from DefinitionInterface
  *
  * some container implementations provide a mechanism for creating a new instance of an object each time
  * it is retrieved from the container.  E.g. the concept of a factory is embedded in the definitions which
@@ -38,7 +36,7 @@ class Container implements ContainerInterface
 
 	/**
 	 * @param  ContainerBuilderInterface  $containerBuilder
-	 * @param  DefinitionsArray  $definitions
+	 * @param  array<DefinitionInterface>  $definitions
 	 */
 	public function __construct(
 		ContainerBuilderInterface $containerBuilder,

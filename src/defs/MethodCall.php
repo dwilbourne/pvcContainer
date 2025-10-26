@@ -5,26 +5,23 @@ namespace pvc\container\defs;
 use pvc\interfaces\container\DefinitionInterface;
 use pvc\interfaces\container\MethodCallInterface;
 
-/**
- * @phpstan-import-type Args from DefinitionInterface
- * @phpstan-import-type MethodCallArray from DefinitionInterface
- */
-readonly class MethodCall implements MethodCallInterface
+class MethodCall implements MethodCallInterface
 {
 	public string $methodName;
 
 	/**
-	 * @var Args
+	 * @var array<mixed>
 	 */
-	public array $arguments;
+	public array $arguments = [];
 
 	/**
-	 * @param  MethodCallArray  $methodCallArray
+	 * @param  string  $methodName
+	 * @param mixed|null ...$args
 	 */
-	public function __construct (array $methodCallArray)
+	public function __construct (string $methodName, ... $args)
 	{
-		$this->methodName = $methodCallArray['methodName'];
-		$this->arguments = $methodCallArray['arguments'] ?? [];
+		$this->methodName = $methodName;
+		$this->arguments  = array_merge($this->arguments, $args);
 	}
 
 	public function getMethodName(): string
@@ -34,12 +31,10 @@ readonly class MethodCall implements MethodCallInterface
 
 	/**
 	 * getArguments
-	 * @return Args
+	 * @return array<mixed>
 	 */
 	public function getArguments(): array
 	{
 		return $this->arguments;
 	}
-
-
 }

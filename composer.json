@@ -21,16 +21,9 @@
     "minimum-stability": "dev",
 	"require": {
         "pvc/interfaces": "*",
-        "pvc/struct": "*",
-        "pvc/http": "*",
-        "psr/log": "*",
-        "psr/http-client": "^1",
-        "psr/http-message": "^1",
+        "pvc/err": "*",
         "league/container": "^5",
-        "php-di/php-di": "^7",
-        "monolog/monolog": "^3",
-        "guzzlehttp/guzzle": "*"
-
+        "php-di/php-di": "^7"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9",

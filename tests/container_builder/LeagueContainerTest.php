@@ -5,7 +5,7 @@ declare (strict_types=1);
 namespace pvcTests\container\container_builder;
 
 use pvc\container\container_builder\LeagueContainerBuilder;
-use pvc\container\defs\DefCollectionBuilder;
+use pvc\container\defs\DefinitionCollection;
 
 /**
  * @covers \pvc\container\container_builder\LeagueContainerBuilder::__construct
@@ -14,8 +14,8 @@ use pvc\container\defs\DefCollectionBuilder;
  */
 class LeagueContainerTest extends AbstractContainerTest
 {
-	function getContainerBuilder(DefCollectionBuilder $defCollectionBuilder): LeagueContainerBuilder
+	function getContainerBuilder(DefinitionCollection $definitionCollection): LeagueContainerBuilder
 	{
-		return new LeagueContainerBuilder($defCollectionBuilder);
+		return new LeagueContainerBuilder($definitionCollection);
 	}
 }

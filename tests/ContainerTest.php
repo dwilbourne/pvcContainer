@@ -9,9 +9,6 @@ use PHPUnit\Framework\TestCase;
 use pvc\interfaces\container\ContainerBuilderInterface;
 use pvc\interfaces\container\DefinitionInterface;
 
-/**
- * @phpstan-import-type DefinitionArray from DefinitionInterface
- */
 class ContainerTest extends TestCase
 {
 	protected ContainerBuilderInterface $builder;
@@ -24,7 +21,7 @@ class ContainerTest extends TestCase
 
 	protected function setUp(): void
 	{
-		/** @var array<DefinitionArray> $definitions */
+		/** @var array<DefinitionInterface> $definitions */
 		$definitions = include $this->definitionsFile;
 		$this->builder = $this->createMock(ContainerBuilderInterface::class);
 		$this->psrInterface = $this->createMock(ContainerInterface::class);

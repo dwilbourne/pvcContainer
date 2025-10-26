@@ -11,23 +11,14 @@ use pvcTests\container\fixture\Quux;
 
 
 return [
-	[
-		'resolvableString' => Bar::class,
-	],
-	[
-		'resolvableString' => Baz::class,
-	],
-	[
-		'resolvableString' => Quux::class,
-	],
-	[
-		'resolvableString' => Foo::class,
-		'constructorArgs'  => [Bar::class, Baz::class, 'some_string'],
-	],
-	[
-		'alias' => 'FooInitialized',
-		'resolvableString' => Foo::class,
-		'constructorArgs'  => [Bar::class, Baz::class, 'some_other_string'],
-		'methodCalls'      => [['methodName' => 'initialize', 'arguments' => [Quux::class]]],
-	],
+	new Definition(Bar::class),
+	new Definition(Baz::class),
+	new Definition(Quux::class),
+
+	new Definition(Foo::class)
+		->addConstructorArgs(Bar::class, Baz::class, 'some_string'),
+
+	new Definition('FooInitialized', Foo::class)
+	->addConstructorArgs(Bar::class, Baz::class, 'some_other_string')
+	->addMethodCall('initialize', Quux::class),
 ];

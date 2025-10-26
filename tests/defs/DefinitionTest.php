@@ -9,54 +9,36 @@ use pvc\interfaces\container\DefinitionInterface;
 
 use function PHPUnit\Framework\assertInstanceOf;
 
-/**
- * @phpstan-import-type Args from DefinitionInterface
- * @phpstan-import-type DefinitionArray from DefinitionInterface
- * @phpstan-import-type MethodCallArray from DefinitionInterface
- */
 class DefinitionTest extends TestCase
 {
-	/**
-	 * @var array<MethodCallArray>
-	 */
-	protected array $methodCalls = [
-		['methodName' => 'initialize'],
-		['methodName' => 'setProperty', 'arguments' => ['some other value']],
-	];
-
 	protected string $alias = 'alias';
-	protected string $resolvableString = 'someClass';
+	protected string $classString = 'a_class_string';
 
 	/**
-	 * @var Args
+	 * @var array<mixed>
 	 */
 	protected array $constructorArgs = ['foo', 'bar'];
 
 
-	/**
-	 * @var DefinitionArray
-	 */
-	protected array $definitionArray;
-
 	protected Definition $definition;
 
 	/**
-	 * testConstructWithJustResolvableString
+	 * testConstructWithJustClassString
+	 *
 	 * @return void
 	 * @covers \pvc\container\defs\Definition::__construct
 	 * @covers \pvc\container\defs\Definition::getAlias
-	 * @covers \pvc\container\defs\Definition::getResolvableString
+	 * @covers \pvc\container\defs\Definition::getClassString
 	 * @covers \pvc\container\defs\Definition::getConstructorArgs
 	 * @covers \pvc\container\defs\Definition::getMethodCalls
 	 */
-	public function testConstructWithJustResolvableString(): void
+	public function testConstructWithJustClassString(): void
 	{
-		$this->definitionArray['resolvableString'] = $this->resolvableString;
-		$def = new Definition($this->definitionArray);
+		$def = new Definition($this->classString);
 		self::assertInstanceOf(Definition::class, $def);
 
-		self::assertEquals($this->resolvableString, $def->getAlias());
-		self::assertEquals($this->resolvableString, $def->getResolvableString());
+		self::assertEquals($this->classString, $def->getAlias());
+		self::assertEquals($this->classString, $def->getClassString());
 		self::assertEquals([], $def->getConstructorArgs());
 		self::assertEquals([], $def->getMethodCalls());
 	}
@@ -68,28 +50,26 @@ class DefinitionTest extends TestCase
 	 */
 	public function testConstructWithAlias(): void
 	{
-		$this->definitionArray['alias'] = $this->alias;
-		$this->definitionArray['resolvableString'] = $this->resolvableString;
-		$def = new Definition($this->definitionArray);
+		$def = new Definition($this->alias, $this->classString);
 		self::assertInstanceOf(Definition::class, $def);
 		self::assertEquals($this->alias, $def->getAlias());
-		self::assertEquals($this->resolvableString, $def->getResolvableString());
+		self::assertEquals($this->classString, $def->getClassString());
 	}
 
 	/**
 	 * testWithConstructorArgs
 	 * @return void
 	 * @covers \pvc\container\defs\Definition::__construct
+	 * @covers \pvc\container\defs\Definition::addConstructorArgs
 	 */
 	public function testWithConstructorArgs(): void
 	{
-		$this->definitionArray['alias'] = $this->alias;
-		$this->definitionArray['resolvableString'] = $this->resolvableString;
-		$this->definitionArray['constructorArgs'] = $this->constructorArgs;
-		$def = new Definition($this->definitionArray);
+		$def = new Definition($this->alias, $this->classString)
+			->addConstructorArgs(... $this->constructorArgs);
+
 		self::assertInstanceOf(Definition::class, $def);
 		self::assertEquals($this->alias, $def->getAlias());
-		self::assertEquals($this->resolvableString, $def->getResolvableString());
+		self::assertEquals($this->classString, $def->getClassString());
 		self::assertEquals($this->constructorArgs, $def->getConstructorArgs());
 	}
 
@@ -97,13 +77,20 @@ class DefinitionTest extends TestCase
 	 * testWithMethodCalls
 	 * @return void
 	 * @covers \pvc\container\defs\Definition::__construct
+	 * @covers \pvc\container\defs\Definition::addMethodCall
 	 */
 	public function testWithMethodCalls(): void
 	{
-		$this->definitionArray['alias'] = $this->alias;
-		$this->definitionArray['resolvableString'] = $this->resolvableString;
-		$this->definitionArray['methodCalls'] = $this->methodCalls;
-		$def = new Definition($this->definitionArray);
+		$methodA = 'initialize';
+		$methodB = 'setProperty';
+		$methodBArgs = ['some other value', 4];
+
+
+		$def = new Definition($this->alias, $this->classString)
+			->addConstructorArgs(... $this->constructorArgs)
+			->addMethodCall($methodA)
+			->addMethodCall($methodB, ... $methodBArgs);
+
 
 		foreach($def->getMethodCalls() as $methodCall) {
 			assertInstanceOf(MethodCall::class, $methodCall);

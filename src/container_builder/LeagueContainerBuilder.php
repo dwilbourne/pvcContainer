@@ -9,33 +9,29 @@ use League\Container\Definition\Definition as LeagueDefinition;
 use League\Container\Definition\DefinitionAggregate;
 use League\Container\ReflectionContainer;
 use Psr\Container\ContainerInterface;
-use pvc\container\defs\DefCollectionBuilder;
+use pvc\container\defs\DefinitionCollection;
 use pvc\interfaces\container\ContainerBuilderInterface;
 use pvc\interfaces\container\DefinitionInterface;
 
-/**
- * @phpstan-import-type DefinitionArray from DefinitionInterface
- * @phpstan-import-type DefinitionsArray from DefinitionInterface
- */
 class LeagueContainerBuilder implements ContainerBuilderInterface
 {
+
 	public function __construct(
-		protected DefCollectionBuilder $definitionCollectionBuilder,
-	)
-	{
-	}
+		protected DefinitionCollection $definitionCollection,
+	) {}
 
 	/**
 	 * build
 	 *
-	 * @param  DefinitionsArray  $definitions
+	 * @param  array<DefinitionInterface>  $definitions
 	 *
 	 * @return ContainerInterface
 	 */
 	public function build(array $definitions): ContainerInterface
 	{
-		$pvcDefinitionCollection = $this->definitionCollectionBuilder->build($definitions);
-		$leagueDefinitionsArray = array_map([$this, 'buildSingle'], $pvcDefinitionCollection->getElements());
+		$this->definitionCollection->hydrate($definitions);
+
+		$leagueDefinitionsArray = array_map([$this, 'buildSingle'], iterator_to_array($this->definitionCollection));
 		$aggregate = new DefinitionAggregate($leagueDefinitionsArray);
 		$container = new Container($aggregate);
 
@@ -51,7 +47,7 @@ class LeagueContainerBuilder implements ContainerBuilderInterface
 	{
 		$leagueDefinition = new LeagueDefinition(
 			$definition->getAlias(),
-			$definition->getResolvableString(),
+			$definition->getClassString(),
 		);
 
 		$leagueDefinition->addArguments($definition->getConstructorArgs());

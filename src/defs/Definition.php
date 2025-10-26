@@ -7,54 +7,41 @@ namespace pvc\container\defs;
 use pvc\interfaces\container\DefinitionInterface;
 use pvc\interfaces\container\MethodCallInterface;
 
-/**
- * @phpstan-import-type Args from DefinitionInterface
- * @phpstan-import-type DefinitionArray from DefinitionInterface
- * @phpstan-import-type MethodCallArray from DefinitionInterface
- */
-readonly class Definition implements DefinitionInterface
+class Definition implements DefinitionInterface
 {
 	/**
 	 * @var string
-	 * if not specified in the array, the resolvableString field in the array is used here
 	 */
-	public string $alias;
+	protected string $alias;
 
 	/**
 	 * @var string
-	 * often a class string but can also be an alias for something else in the container
 	 */
-	public string $resolvableString;
+	protected string $classString;
 
 	/**
-	 * @var Args
+	 * @var array<mixed>
 	 */
-	public array $constructorArgs;
+	protected array $constructorArgs = [];
 
 	/**
-	 * @var array<MethodCall>
+	 * @var array<MethodCallInterface>
 	 */
-	public array $methodCalls;
+	protected array $methodCalls = [];
 
 	/**
-	 * @param  DefinitionArray  $defArray
+	 * @param  string  $aliasOrClassString
+	 * @param  ?string  $classString
 	 */
-	public function __construct(array $defArray)
+	public function __construct(string $aliasOrClassString, ?string $classString = null)
 	{
-		$this->alias = $defArray['alias'] ?? $defArray['resolvableString'];
-		$this->resolvableString = $defArray['resolvableString'];
-		$this->constructorArgs = $defArray['constructorArgs'] ?? [];
-
-		/**
-		 * array<MethodCall> $mc
-		 */
-		$mc = [];
-		if (isset($defArray['methodCalls'])) {
-			foreach($defArray['methodCalls'] as $methodCallArray) {
-				$mc[] = new MethodCall($methodCallArray);
-			}
+		if (null !== $classString) {
+			   $this->alias = $aliasOrClassString;
+			   $this->classString = $classString;
+		} else {
+				$this->alias = $aliasOrClassString;
+				$this->classString = $aliasOrClassString;
 		}
-		$this->methodCalls = $mc;
 	}
 
 	public function getAlias(): string
@@ -62,18 +49,30 @@ readonly class Definition implements DefinitionInterface
 		return $this->alias;
 	}
 
-	public function getResolvableString(): string
+	public function getClassString(): string
 	{
-		return $this->resolvableString;
+		return $this->classString;
 	}
 
 	/**
 	 * getConstructorArgs
-	 * @return Args
+	 * @return array<mixed>
 	 */
 	public function getConstructorArgs(): array
 	{
 		return $this->constructorArgs;
+	}
+
+	/**
+	 * addConstructorArgs
+	 * @param  mixed  $args
+	 *
+	 * @return DefinitionInterface
+	 */
+	public function addConstructorArgs(... $args): DefinitionInterface
+	{
+		$this->constructorArgs = array_merge($this->constructorArgs, $args);
+		return $this;
 	}
 
 	/**
@@ -85,5 +84,16 @@ readonly class Definition implements DefinitionInterface
 		return $this->methodCalls;
 	}
 
-
+	/**
+	 * addMethodCall
+	 * @param  string  $methodName
+	 * @param mixed|null $args
+	 *
+	 * @return DefinitionInterface
+	 */
+	public function addMethodCall(string $methodName, ... $args): DefinitionInterface
+	{
+		$this->methodCalls[] = new MethodCall($methodName, ... $args);
+		return $this;
+	}
 }
